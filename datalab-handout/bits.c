@@ -195,9 +195,18 @@ int bitAnd(int x, int y) {
  *   Max ops: 4
  *   Rating: 1
  */
+/*Description:
+ * tmin is a void function that returns the minimum two's compliment
+ * integer. Since we are working with 32 bits, the smallest possible 
+ * value would be a 1 followed by 31 zeros. This operation achieves 
+ * this by beginning with the value 1 and shifting it left 31 times.
+ * This results in the value -2147483648, the minimum two's compliment
+ * integer.
+ */
 int tmin(void) {
-  return 2;
+  return (1 << 31);
 }
+
 /* 
  * bitMatch - Create mask indicating which bits in x match those in y
  *            using only ~ and & 
@@ -270,9 +279,23 @@ int implication(int x, int y) {
  *   Max ops: 5
  *   Rating: 2
  */
+/* Description:
+ * This function accepts an integer x and negates it, essentially 
+ * multiplying it by -1. This function accomplishies this by first
+ * flipping all of the bits. Since there is no -0 in 2s compliment
+ * 1 must be added.
+ * Example:
+ * x = 5
+ * 32-bit, 2s compliment -> 0000 0000 0000 0000 0000 0000 0000 0101
+ * flip the bits         -> 1111 1111 1111 1111 1111 1111 1111 1010
+ * this equals -6, 
+ * so add 1              -> 1111 1111 1111 1111 1111 1111 1111 1011
+ * now it equals -5. 
+ */
 int negate(int x) {
-  return 2;
+  return ~x + 1;
 }
+
 /* 
  * isPositive - return 1 if x > 0, return 0 otherwise 
  *   Example: isPositive(-1) = 0.
@@ -280,9 +303,34 @@ int negate(int x) {
  *   Max ops: 8
  *   Rating: 2
  */
+/*Description:
+ * isPositive accepts an int x. If x > 0, 1 is returned. If x =< 0,
+ * 0 is returned. This is accomplished by first shifting the bits 
+ * right 31 times. This leaves us with the most significant digit.
+ * If this digit is 1, x is negative. If this digit is 0, x =< 0.
+ * If we just flip the bit, we would get the desired output for every
+ * integer except 0. To fix this problem, we instead add !(!(x)). 
+ * This expression always equals 1, except when x = 0. Then it equals 0.
+ *Example:
+ * x = -5
+ * 32-bit, 2s compliment -> 1111 1111 1111 1111 1111 1111 1111 1011
+ * shift right           -> 1 
+ * -1 + !(!(5))          -> 0
+ *Example:
+ * x = 5
+ * 32-bit, 2s compliment -> 0000 0000 0000 0000 0000 0000 0000 0101
+ * shift right           -> 0
+ * 0 + !(!(5))           -> 1
+ *Example: 
+ * x = 0
+ * 32-bit, 2s compliment -> 0000 0000 0000 0000 0000 0000 0000 0000
+ * shift right           -> 0
+ * 0 + !(!(5))           -> 0
+ */
 int isPositive(int x) {
-  return 2;
+  return (x >> 31) + !(!(x));
 }
+
 /*
  * isPallindrome - Return 1 if bit pattern in x is equal to its mirror image
  *   Example: isPallindrome(0x01234567E6AC2480) = 1
