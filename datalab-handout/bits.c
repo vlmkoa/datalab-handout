@@ -178,7 +178,16 @@ NOTES:
  *   Rating: 1
  */
 int bitAnd(int x, int y) {
-  return 2;
+  /* 
+   * Recall De Morgan’s law:
+   *   x & y == ~(~x | ~y)
+   *
+   * Explanation:
+   *  - If a bit is set in both x and y, then (~x | ~y) will have a 0 there.
+   *  - Negating that (~) restores a 1 at those positions.
+   * This allows us to compute AND using only NOT and OR.
+   */
+  return ~(~x | ~y);
 }
 /* 
  * tmin - return minimum two's complement integer 
@@ -294,19 +303,22 @@ int isPallindrome(int x) {
 //=============================================================================
   
   // split x into lower and upper parts
-  int lower = x & (0xFF | (0xFF << 8));
-  int upper = (x >> 16) & (0xFF | (0xFF << 8)); 
+  int m1, m2, m3;
+  int lower, upper;
+  int r;
+  lower = x & (0xFF | (0xFF << 8));
+  upper = (x >> 16) & (0xFF | (0xFF << 8)); 
 
   // swapping adjacent numbers 
-  int m1 = 0x55 | (0x55 << 8);  
-  int r = ((lower >> 1) & m1) | ((lower & m1) << 1);
+  m1 = 0x55 | (0x55 << 8);  
+  r = ((lower >> 1) & m1) | ((lower & m1) << 1);
 	
   // swapping 2 bits group
-  int m2 = 0x33 | (0x33 << 8);  
+  m2 = 0x33 | (0x33 << 8);  
   r = ((r >> 2) & m2) | ((r & m2) << 2);
 
   // swapping 4 bits group
-  int m3 = 0x0F | (0x0F << 8);  
+  m3 = 0x0F | (0x0F << 8);  
   r = ((r >> 4) & m3) | ((r & m3) << 4);
   
   // swapping 8 bits group 
@@ -325,7 +337,14 @@ int isPallindrome(int x) {
  *   Rating: 4 
  */
 int bang(int x) {
-  return 2;
+  /* bang
+  - This function works by taking x and its two's complement (~x + 1) and or them. as for any nonzero x, 
+    either x or -x will have its sign bit set. Right-shifting by 31 extracts the sign bit, and adding 1 
+    yields 0 for nonzero x and 1 when x is 0.
+  - Parameters: x
+  - Returns: 1 if x is 0, 0 otherwise.
+  */
+  return ((x | (~x + 1)) >> 31) + 1;
 }
 /* 
  * absVal - absolute value of x
