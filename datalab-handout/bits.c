@@ -216,9 +216,23 @@ int bitMatch(int x, int y) {
  *   Legal ops: ~ &
  *   Max ops: 14
  *   Rating: 1
+ *   SOLUTION
+ * The operation of x ^ y can be written in the function table as follows
+ *  A B | F
+ * ----------
+ *  0 0 | 0
+ *  0 1 | 1
+ *  1 0 | 1
+ *  1 1 | 0
+ *  The resulting SOP expression from the function table is: F = (~A & B) + (A & ~B)
+ *  Since we cannot use the + operator we use DeMorgan's Law which states that
+ *  A + B = ~(~A & ~B)
+ *  We can then apply that to our x and y resulting in the espression
+ *  x ^ y = ~(~(x & ~y) & ~(~x & y))
  */
 int bitXor(int x, int y) {
-  return 2;
+  int result = ~(~(x & ~y) & ~(~x & y)); // demorgans law
+  return result;
 }
 //2
 /* 
@@ -320,7 +334,41 @@ int bang(int x) {
  *   Legal ops: ! ~ & ^ | + << >>
  *   Max ops: 10
  *   Rating: 4
+ * 
+ *   Ex. absVal(-1)
+ *   We first need to create a mask that fills with -1s or 0s depending on if 
+ *   it is positive or negative. We see that with -1 that that since its leading
+ *   is 1 the mask and -1 will look like:
+ *   -1: 1111 1111 1111 1111
+ *   mask: 1111 1111 1111 1111
+ *   We then use XOR to convert it to a positive number resulting in 
+ *   0000 0000 0000 0000
+ *   We then want to subtract the mask but since that's not a legal operator we 
+ *   can take the NOT operator to convert mask to all 0s and add 1 which will work
+ *   the same as subtraction. We then add it to our x ^ mask result and get the absolute
+ *   value of -1 which is 1.
+ *   ~mask + 1: 0000 0000 0000 0001
+ *    x ^ mask: 0000 0000 0000 0000
+ *    (~mask + 1) + (~mask + 1): 0000 0000 0000 0001
+ * 
+ *   Ex. absVal(1)
+ *   We first need to create a mask that fills with -1s or 0s depending on if 
+ *   it is positive or negative. We see that with 1 that that since its leading
+ *   is 0 the mask and 1 will look like:
+ *      1: 0000 0000 0000 0001
+ *   mask: 0000 0000 0000 0000 
+ *   Using XOR will not change anything in the number since its already positive leading to: 
+ *   0000 0000 0000 0001
+ *   We then want to subtract the mask but since that's not a legal operator we 
+ *   can take the NOT operator to convert mask to all 1s and add 1 which will work
+ *   the same as subtraction. We then add it to our x ^ mask result and get the absolute
+ *   value of 1 which is 1.
+ *   ~mask + 1: 0000 0000 0000 0000
+ *    x ^ mask: 0000 0000 0000 0001
+ *    (~mask + 1) + (~mask + 1): 0000 0000 0000 0001
  */
 int absVal(int x) {
-  return 2;
+  int mask  = x >> 31; // fills with -1 or 0 depending on if its pos or neg
+  return (x ^ mask) + (~mask + 1); // convert to postive number and then subtract mask
+  
 }
