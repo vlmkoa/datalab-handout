@@ -178,17 +178,34 @@ NOTES:
  *   Rating: 1
  */
 int bitAnd(int x, int y) {
-  /* 
-   * Recall De Morgan’s law:
-   *   x & y == ~(~x | ~y)
+  /*
+   * bitAnd
+   * Computes the bitwise AND of x and y using only ~ (NOT) and | (OR),
+   * based on De Morgan’s law: x & y == ~(~x | ~y)
    *
-   * Explanation:
-   *  - If a bit is set in both x and y, then (~x | ~y) will have a 0 there.
-   *  - Negating that (~) restores a 1 at those positions.
-   * This allows us to compute AND using only NOT and OR.
+   * Logic:
+   *  - Step 1: ~x flips all bits of x, ~y flips all bits of y.
+   *  - Step 2: (~x | ~y) sets a bit to 1 if either x or y had a 0 in that position.
+   *            It will be 0 only if both x and y had 1 in that bit.
+   *  - Step 3: Applying ~ again flips the bits back, giving 1 only where both
+   *            x and y had 1.
+   *
+   * Examples:
+   *   x = 6 (0110), y = 5 (0101)
+   *   ~x = 1001, ~y = 1010
+   *   ~x | ~y = 1011
+   *   ~(~x | ~y) = 0100 (which is 4) → correct x & y
+   *
+   * Parameters:
+   *   x – first integer
+   *   y – second integer
+   *
+   * Returns:
+   *   Bitwise AND of x and y
    */
   return ~(~x | ~y);
 }
+
 /* 
  * tmin - return minimum two's complement integer 
  *   Legal ops: ! ~ & ^ | + << >>
@@ -386,14 +403,37 @@ int isPallindrome(int x) {
  */
 int bang(int x) {
   /* bang
-  - This function works by taking x and its two's complement (~x + 1) and or them. as for any nonzero x, 
-    either x or -x will have its sign bit set. Right-shifting by 31 extracts the sign bit, and adding 1 
-    yields 0 for nonzero x and 1 when x is 0.
-  - Parameters: x
-  - Returns: 1 if x is 0, 0 otherwise.
-  */
+   * This function computes the logical NOT of x (i.e., !x) without
+   * using the '!' operator.
+   *
+   * Logic:
+   *  - For any integer x ≠ 0, either x or its two’s complement (~x + 1),
+   *    which is -x, will have the sign bit (most significant bit) set to 1.
+   *      • Example: if x > 0, then -x < 0, so -x has the sign bit = 1.
+   *      • If x < 0, then x itself already has the sign bit = 1.
+   *
+   *  - The expression (x | (~x + 1)) therefore guarantees that for any
+   *    nonzero x, the result will have the sign bit = 1.
+   *
+   *  - Right shifting by 31 moves the sign bit into the least significant
+   *    position:
+   *      • For nonzero x → (x | -x) >> 31 = 1
+   *      • For x = 0 → (0 | 0) >> 31 = 0
+   *
+   *  - Finally, adding 1 flips the result:
+   *      • Nonzero x → 1 + 0 = 0
+   *      • x = 0 → 0 + 1 = 1
+   *
+   * Parameters:
+   *   x – the input integer
+   *
+   * Returns:
+   *   1 if x == 0
+   *   0 otherwise
+   */
   return ((x | (~x + 1)) >> 31) + 1;
 }
+
 /* 
  * absVal - absolute value of x
  *   Example: absVal(-1) = 1.
