@@ -198,7 +198,17 @@ int tmin(void) {
  *   Rating: 1
  */
 int bitMatch(int x, int y) {
-  return 2;
+//=============================================================================
+// bitMatch 
+// This function returns a mask with 1's where x and y have the same bits
+// which is equivalent to ~(x XOR y).
+// Parameters: x,y
+// Returns: the mask to indicating matches in x and y
+//=============================================================================
+
+  // (x or y) and not (x and y) so when bit x is different from bit y, the result is 1 = xor
+  // by inverting the above, result = 1 when the bits are the same.
+  return ~((x|y) & ~(x&y));
 }
 /* 
  * bitXor - x^y using only ~ and & 
@@ -221,7 +231,14 @@ int bitXor(int x, int y) {
  *   Rating: 2
  */
 int implication(int x, int y) {
-    return 2;
+//=============================================================================
+// implication 
+//  F is only false if x is 1 and y is 0, so if y is not zero, or x is zero, 
+//  then return 1.
+//  Parameters: x, y
+//  Return values: the value of !x or y, representing x implies y.
+//=============================================================================
+    return (!x)|(!!y);
 }
 /* 
  * negate - return -x 
@@ -251,7 +268,38 @@ int isPositive(int x) {
  *   Rating: 4
  */
 int isPallindrome(int x) {
-    return 2;
+//=============================================================================
+// isPallindrome
+// This function checks if the 32-bit integer x is a bit-level palindrome. 
+// This function splits x into lower and upper halves then reverses the lower 
+// 16 bits using bit swaps. Finally, it compares the reversed lower half with 
+// the upper half.
+// Parameters: x 
+// Returns: 1 if the upper 16 bits equal the reversed lower 16 bits 
+// (palindrome), 0 otherwise.
+//=============================================================================
+  
+  // split x into lower and upper parts
+  int lower = x & (0xFF | (0xFF << 8));
+  int upper = (x >> 16) & (0xFF | (0xFF << 8)); 
+
+  // swapping adjacent numbers 
+  int m1 = 0x55 | (0x55 << 8);  
+  int r = ((lower >> 1) & m1) | ((lower & m1) << 1);
+	
+  // swapping 2 bits group
+  int m2 = 0x33 | (0x33 << 8);  
+  r = ((r >> 2) & m2) | ((r & m2) << 2);
+
+  // swapping 4 bits group
+  int m3 = 0x0F | (0x0F << 8);  
+  r = ((r >> 4) & m3) | ((r & m3) << 4);
+  
+  // swapping 8 bits group 
+  r = ((r >> 8) & 0xFF) | ((r & 0xFF) << 8);
+
+  
+  return !(upper ^ r);
 }
 //3
 //4
